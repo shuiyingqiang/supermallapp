@@ -26,3 +26,10 @@ export function request(config) {
       //3.发送真正的网络请求
      return instance(config)
 }
+
+export function newrequest(config) {
+   const instance = axios.create({
+      baseURL: "http://152.136.185.210:8000/api/w6"
+   })
+   return instance(config)
+}

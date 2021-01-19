@@ -18,7 +18,7 @@
    import FeatrueView from "./childComps/FeatrueView"
    import TabControl from "components/content/tabcontrol/TabControl"
    
-   import {getHomeMultidata} from "network/home"
+   import {getHomeMultidata, getHomeGoods} from "network/home"
 
    export default {
       name:'Home',
@@ -33,15 +33,37 @@
          return {
             banners: [],
             recommends: [],
-            titles: ['流行','新款','精选']
+            titles: ['流行','新款','精选'],
+            goods: {
+               "pop": {page: 0, list: []},
+               "new": {page: 0, list: []},
+               "sell": {page: 0, list: []}
+            }
          }  
       },
+      methods: {
+        getHomeMultidata() {
+          getHomeMultidata().then(res => {
+            this.banners = res.data.banner.list
+            this.recommends = res.data.recommend.list
+          })
+        },
+        getHomeGoods(type) {
+          const page = this.goods[type].page += 1
+          getHomeGoods(type, page).then(res => {
+            this.goods[type].list.push(...res.data.data.list)
+            this.goods[type].page += 1
+          })
+        }
+      },
       created() {
-        getHomeMultidata().then(res => {
-          this.banners = res.data.banner.list
-          this.recommends = res.data.recommend.list
-          console.log(res);
-        })
+        //1.请求多个数据
+        this.getHomeMultidata()
+
+        //2.请求商品数据
+        this.getHomeGoods("pop")
+        this.getHomeGoods("new")
+        this.getHomeGoods("sell")
       },
    }
 </script>
