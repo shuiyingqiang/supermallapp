@@ -28,7 +28,7 @@ export default {
   methods: {
       itemClick(index) {
           this.currentIndex = index
-          console.log(index);
+          this.$emit("tab-control", index)
       }
   },
   

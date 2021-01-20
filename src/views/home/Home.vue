@@ -6,7 +6,8 @@
      <home-swiper :banners1="banners"/>
      <recommend-view :recommends1="recommends"/>
      <featrue-view/>
-     <tab-control class="tab-control" :titles1="titles"/>
+     <tab-control class="tab-control" :titles1="titles" @tab-control="butClick"/>
+     <goods-list :goods1="showGoods"/>
      
    </div>
 </template>
@@ -17,6 +18,7 @@
    import RecommendView from "./childComps/RecommendView"
    import FeatrueView from "./childComps/FeatrueView"
    import TabControl from "components/content/tabcontrol/TabControl"
+   import GoodsList from "components/content/goods/GoodsList"
    
    import {getHomeMultidata, getHomeGoods} from "network/home"
 
@@ -27,7 +29,8 @@
          HomeSwiper,
          RecommendView,
          FeatrueView,
-         TabControl
+         TabControl,
+         GoodsList
       },
       data() {
          return {
@@ -38,10 +41,14 @@
                "pop": {page: 0, list: []},
                "new": {page: 0, list: []},
                "sell": {page: 0, list: []}
-            }
+            },
+            currentType: "pop"
          }  
       },
       methods: {
+         /*
+           网络请求相关方法
+         */
         getHomeMultidata() {
           getHomeMultidata().then(res => {
             this.banners = res.data.banner.list
@@ -54,6 +61,27 @@
             this.goods[type].list.push(...res.data.data.list)
             this.goods[type].page += 1
           })
+        },
+        /*
+          事件监听相关方法
+        */
+        butClick(index) {
+          switch(index) {
+            case 0:
+              this.currentType = "pop"
+              break
+            case 1:
+              this.currentType = "new"
+              break
+            case 2:
+               this.currentType = "sell"  
+          }
+          console.log(index);
+        }
+      },
+      computed: {
+        showGoods() {
+           return this.goods[this.currentType].list
         }
       },
       created() {
@@ -86,5 +114,6 @@
   .tab-control {
      position: sticky;
      top:44px;
+     z-index: 9;
   }
 </style>
