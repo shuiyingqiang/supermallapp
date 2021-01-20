@@ -3,11 +3,15 @@
      <nav-bar class="home-nav">
         <div slot="center">购物街</div>
      </nav-bar>
-     <home-swiper :banners1="banners"/>
-     <recommend-view :recommends1="recommends"/>
-     <featrue-view/>
-     <tab-control class="tab-control" :titles1="titles" @tab-control="butClick"/>
-     <goods-list :goods1="showGoods"/>
+     <div class="wrapper">
+       <div class="content">
+         <home-swiper :banners1="banners"/>
+         <recommend-view :recommends1="recommends"/>
+         <featrue-view/>
+         <tab-control class="tab-control" :titles1="titles" @tab-control="butClick"/>
+         <goods-list :goods1="showGoods"/>
+       </div>
+     <div>
      
    </div>
 </template>
