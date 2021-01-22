@@ -61,6 +61,7 @@
         this.scroll.finishPullUp()
       },
       refresh() {
+        console.log("-----");
         this.scroll && this.scroll.refresh()
       }
     },

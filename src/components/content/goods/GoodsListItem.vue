@@ -22,6 +22,7 @@
       }
     },
     methods: {
+      //事件总线 类似于Vuex状态管理 $bus
       imageLoad() {
         this.$bus.$emit("itemImageLoad")
       }
