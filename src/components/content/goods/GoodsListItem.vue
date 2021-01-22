@@ -1,6 +1,7 @@
 <template>
-   <div class="goods-list-item">
-     <img :src="item1.show.img" alt="">
+   <div class="goods-list-item">  
+     <!-- load实时监听 在一加载时就监听 -->
+     <img :src="item1.show.img" alt="" @load="imageLoad">
      <div class="goods-info">
        <p>{{item1.title}}</p>
        <span class="price">{{item1.price}}</span>
@@ -19,7 +20,12 @@
               return {}
           }
       }
-    }
+    },
+    methods: {
+      imageLoad() {
+        this.$bus.$emit("itemImageLoad")
+      }
+    },
   }
 </script>
 
