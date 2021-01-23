@@ -3,6 +3,11 @@
      <nav-bar class="home-nav">
         <div slot="center">购物街</div>
      </nav-bar>
+      <tab-control class="tab-controlMin" 
+                      :titles1="titles" 
+                      @tab-control="butClick" 
+                      ref="tabControl1"
+                      v-show="isTabFixed"/>
 
        <scroll class="content" 
                ref="scroll"
@@ -10,10 +15,13 @@
                @scroll="contentScroll"
                :pull-up-load="true"
                @pullingUp="loadMore">
-         <home-swiper :banners1="banners"/>
+         <home-swiper :banners1="banners" @swiperImageLoad="swiperImageLoad"/>
          <recommend-view :recommends1="recommends"/>
          <featrue-view/>
-         <tab-control class="tab-control" :titles1="titles" @tab-control="butClick"/>
+         <tab-control class="tab-control" 
+                      :titles1="titles" 
+                      @tab-control="butClick" 
+                      ref="tabControl2"/>
          <goods-list :goods1="showGoods"/>
        </scroll>
        
@@ -36,6 +44,7 @@
    import BackTop from "components/content/backTop/BackTop"
    
    import {getHomeMultidata, getHomeGoods} from "network/home"
+   import {debounce} from "common/utils"
 
    export default {
       name:'Home',
@@ -48,7 +57,6 @@
          GoodsList,
          Scroll,
          BackTop
-
       },
       data() {
          return {
@@ -61,7 +69,10 @@
                "sell": {page: 0, list: []}
             },
             currentType: "pop",
-            isShowBackTop: false
+            isShowBackTop: false,
+            tabOffsetTop: 0,
+            isTabFixed: false,
+            saveY: 0
          }  
       },
       methods: {
@@ -98,39 +109,47 @@
                this.currentType = "sell"  
               break 
           }
-          console.log(index);
+          this.$refs.tabControl1.currentIndex = index;
+          this.$refs.tabControl2.currentIndex = index;
         },
         backClick() {
           this.$refs.scroll.scrollTo(0,0)
-          console.log("backClick");
         },
         contentScroll(position) {
+          //1.判断BackTop是否显示
           //-position.y 先将position实时监听的位置转成正值(-)
-          this.isShowBackTop = -(position.y) > 1000
+          this.isShowBackTop = (-position.y) > 1000
+
+          //2.决定tabControl是否吸顶(position: fixed)
+          this.isTabFixed = (-position.y) > this.tabOffsetTop
         },
         loadMore() {
           this.getHomeGoods(this.currentType)
         },
-        //对于refresh刷新频繁的问题，进行防抖函数操作
-        //防抖debounce/节流throttle
-        //防抖函数起作用的过程： 
-        //将refresh函数传入到debounce函数中，生成一个新的函数
-        //之后在调用非常频繁的时候，就使用新生成的函数
-        //而新生成的函数，并不会非常频繁的调用，如果下一次执行来的非常快，那么会将上一次取消掉
-        debounce(func, delay) {
-          let timer = null
-          return function (...args) { 
-            if(timer) clearTimeout(timer)
-            timer = setTimeout(() => {
-              func.apply(this, args)
-            }, delay)
-           }
-        }
+        swiperImageLoad() {
+          //2.获取tabControl的offsetTop
+          //所有的组件都有一个属性$el: 用于获取组件中的元素
+          this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
+        },
       },
       computed: {
         showGoods() {
            return this.goods[this.currentType].list
         }
+      },
+      //生命周期函数 销毁时回调
+      destroyed() {
+      },
+      //生命周期函数 活跃状态
+      activated() {
+        this.$refs.scroll.scrollTo(0, this.saveY, 0)
+        //每次处于活跃状态的时候刷新一下 
+        this.$refs.scroll.refresh()
+      },
+      //生命周期函数 不活跃状态
+      deactivated() {
+        this.saveY = this.$refs.scroll.getScrollY()
+        console.log(this.saveY);
       },
       //生命周期函数 在模板渲染成html或者模板编译进路由前调用  created()
       created() {
@@ -146,7 +165,7 @@
       mounted() {
         //3.监听item中图片加载完成
         //事件总线 类似于Vuex状态管理 $bus
-        const refresh = this.debounce(this.$refs.scroll.refresh, 200)
+        const refresh = debounce(this.$refs.scroll.refresh, 200)
         this.$bus.$on("itemImageLoad", () => {
           //对于refresh刷新频繁的问题，进行防抖函数操作
           refresh()
@@ -159,23 +178,17 @@
 <style scoped>
   #home {
      height: 100vh;
-     padding-top: 44px;
      position: relative;
   }
   .home-nav {
      background-color: var(--color-tint);
      color: #fff;
-
-     position: fixed;
+     
+     /* position: fixed;
      left: 0;
      right: 0;
      top: 0;
-     z-index: 9;
-  }
-  .tab-control {
-     position: sticky;
-     top:44px;
-     z-index: 9;
+     z-index: 9; */
   }
   .content {
     position: absolute;
@@ -183,5 +196,9 @@
     bottom: 44px;
     height:calc(100% - 93px);
     overflow: hidden;
+  }
+  .tab-controlMin {
+    position: relative;
+    z-index: 9;
   }
 </style>
