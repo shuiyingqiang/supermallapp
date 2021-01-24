@@ -1,5 +1,5 @@
 <template>
-   <div class="goods-list-item">  
+   <div class="goods-list-item" @click="itemClick">  
      <!-- load实时监听 在一加载时就监听 -->
      <img :src="item1.show.img" alt="" @load="imageLoad">
      <div class="goods-info">
@@ -25,6 +25,9 @@
       //事件总线 类似于Vuex状态管理 $bus
       imageLoad() {
         this.$bus.$emit("itemImageLoad")
+      },
+      itemClick() {
+        this.$router.push("/detail/" + this.item1.iid)
       }
     },
   }
