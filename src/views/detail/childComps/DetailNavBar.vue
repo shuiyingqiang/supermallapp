@@ -31,6 +31,8 @@
     methods: {
         titleClick(index) {
             this.currentIndex = index
+            //发射当前的一个下标
+            this.$emit("titleClick", index)
         },
         backClick() {
             this.$router.back()

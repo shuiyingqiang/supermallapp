@@ -29,7 +29,7 @@
             但是构建组件的监听必须加上一个修饰符 .native -->
        <back-top @click.native="backClick" v-show="isShowBackTop"/>
          
-   </div>
+    </div>
 </template>
 
 <script>
@@ -41,10 +41,9 @@
    import TabControl from "components/content/tabControl/TabControl"
    import GoodsList from "components/content/goods/GoodsList"
    import Scroll from "components/common/scroll/Scroll"
-   import BackTop from "components/content/backTop/BackTop"
    
    import {getHomeMultidata, getHomeGoods} from "network/home"
-   import {debounce} from "common/utils"
+   import {itemImgListenerMixin, backClickMixin} from "common/mixin"
 
    export default {
       name:'Home',
@@ -55,9 +54,9 @@
          FeatrueView,
          TabControl,
          GoodsList,
-         Scroll,
-         BackTop
+         Scroll
       },
+      mixins: [itemImgListenerMixin, backClickMixin],
       data() {
          return {
             banners: [],
@@ -69,7 +68,6 @@
                "sell": {page: 0, list: []}
             },
             currentType: "pop",
-            isShowBackTop: false,
             tabOffsetTop: 0,
             isTabFixed: false,
             saveY: 0
@@ -112,13 +110,10 @@
           this.$refs.tabControl1.currentIndex = index;
           this.$refs.tabControl2.currentIndex = index;
         },
-        backClick() {
-          this.$refs.scroll.scrollTo(0,0)
-        },
         contentScroll(position) {
           //1.判断BackTop是否显示
           //-position.y 先将position实时监听的位置转成正值(-)
-          this.isShowBackTop = (-position.y) > 1000
+          this.demo(position);
 
           //2.决定tabControl是否吸顶(position: fixed)
           this.isTabFixed = (-position.y) > this.tabOffsetTop
@@ -148,28 +143,26 @@
       },
       //生命周期函数 不活跃状态
       deactivated() {
+        //1.保存Y值
         this.saveY = this.$refs.scroll.getScrollY()
         console.log(this.saveY);
+
+        //2.取消全局事件的监听
+        this.$bus.$off("itemImgLoad", this.itemImgListener)
       },
       //生命周期函数 在模板渲染成html或者模板编译进路由前调用  created()
       created() {
         //1.请求多个数据
         this.getHomeMultidata()
 
-        //2.请求商品数据
+        //
         this.getHomeGoods("pop")
         this.getHomeGoods("new")
         this.getHomeGoods("sell")
       },
       //生命周期函数 在已完成模板已经渲染或el挂载对应html渲染后调用  mounted()
       mounted() {
-        //3.监听item中图片加载完成
-        //事件总线 类似于Vuex状态管理 $bus
-        const refresh = debounce(this.$refs.scroll.refresh, 200)
-        this.$bus.$on("itemImageLoad", () => {
-          //对于refresh刷新频繁的问题，进行防抖函数操作
-          refresh()
-        })
+        //已经把里面数据进行了抽离，封装处理
       },
    }
 </script>

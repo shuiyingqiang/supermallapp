@@ -1,7 +1,7 @@
 <template>
    <div class="goods-list-item" @click="itemClick">  
      <!-- load实时监听 在一加载时就监听 -->
-     <img :src="item1.show.img" alt="" @load="imageLoad">
+     <img :src="showImage" alt="" @load="imageLoad">
      <div class="goods-info">
        <p>{{item1.title}}</p>
        <span class="price">{{item1.price}}</span>
@@ -21,13 +21,30 @@
           }
       }
     },
+    computed: {
+      showImage() {
+        return this.item1.image || this.item1.show.img
+      }
+    },
     methods: {
       //事件总线 类似于Vuex状态管理 $bus
       imageLoad() {
+        //方法二: 通过对单个组件的监听完成总监听,
+        //这里由于重复代码太多，我们为了把重复的代码抽离出去单独封装，
+        //所以我们使用了vue高级部分 mixin(混入)
+        //有什么不懂请访问mixin官方文档
         this.$bus.$emit("itemImageLoad")
+        
+        //方法一：通过路由进行首页和详情页的全局事件监听
+        // if(this.$route.path.indexOf("/home")) {
+        //   this.$bus.$emit("homeItemImgLoad")
+        // }else if(this.$route.path.indexOf("/detail")) {
+        //   this.$bus.$emit("detailItemImgLoad")
+        // }
       },
       itemClick() {
         this.$router.push("/detail/" + this.item1.iid)
+        console.log("itemClick");
       }
     },
   }
