@@ -10,6 +10,8 @@ export default {
     payload.count ++ 
   },
   [ADD_TO_CART](state, payload) {
+    //记录整条数据是否被选中 默认为被选中
+    payload.checked = true
     state.cartList.push(payload)
   }
     

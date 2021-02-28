@@ -2,9 +2,6 @@
    <div id="detail"> 
      <detail-nav-bar class="detail-nav" @titleClick="titleClick" ref="nav"/>
      <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll">
-       <div>
-         <li v-for="(item, index) in $store.state.cartList" :key="index">{{item}}</li>
-       </div>
        <detail-swiper :top-images="topImages"/>
        <detail-base-info :goods1="goods"/>
        <detail-shop-info :shop1="shop"/>
