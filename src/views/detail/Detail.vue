@@ -30,7 +30,9 @@
 
   import {getDetail, Goods, Shop, GoodsParam, getRecommend} from "network/detail"
   import {debounce} from "common/utils"
-  import {itemImgListenerMixin, backClickMixin} from "common/mixin" 
+  import {itemImgListenerMixin, backClickMixin} from "common/mixin"
+  
+  import { mapActions } from "vuex"
 
   export default {
     components: {
@@ -143,6 +145,8 @@
       this.$bus.$off("itemImgLoad", this.itemImgListener)
     },
     methods: {
+      //对应下面映射关系
+      ...mapActions(["addCart"]),
       imageLoad() {
         //在混入里面封装好的 防抖函数和全局监听
         this.refresh()
@@ -195,8 +199,16 @@
         product.price = this.goods.realPrice;
         product.iid = this.iid;
 
-        //2.将商品添加到购物车里面
-        this.$store.dispatch("addCart", product)
+        //2.将商品添加到购物车里面(1.Promise 2.mapActions)
+        //更改了映射方式
+                              //.then Promise异步请求
+        this.addCart(product).then( res => {
+          console.log(res);
+        })
+                                                //.then Promise异步请求
+        // this.$store.dispatch("addCart", product).then( res => {
+        //   console.log(res);
+        // })
       }
     },
   }
