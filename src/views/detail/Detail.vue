@@ -12,6 +12,7 @@
      </scroll>
      <detail-bottom-bar @addCart="addToCart"/>
      <back-top @click.native="backClick" v-show="isShowBackTop"/>
+     <toast :message="message" :show="show"/>
    </div>
 </template>
 
@@ -27,6 +28,7 @@
 
   import Scroll from "components/common/scroll/Scroll"
   import GoodsList from "components/content/goods/GoodsList"
+  import Toast from "components/common/toast/Toast"
 
   import {getDetail, Goods, Shop, GoodsParam, getRecommend} from "network/detail"
   import {debounce} from "common/utils"
@@ -45,8 +47,9 @@
        DetailGoodsInfo,
        DetailParamInfo,
        DetailCommentInfo,
-       DetailBottomBar  
-    }, 
+       DetailBottomBar,
+       Toast 
+    },
     name:'Detail',
     mixins: [itemImgListenerMixin, backClickMixin],
     data() {
@@ -62,6 +65,8 @@
          themeTopYs: [],
          getThemeTopY: null,
          currentIndex: 0,
+         message: "",
+         show: false
       }
     },
     created() {
@@ -187,6 +192,7 @@
             this.$refs.nav.currentIndex = this.currentIndex
           }
         }
+        //是否显示回到顶部
         this.demo(position);
       },
       //监听点击加入购物车
@@ -203,7 +209,20 @@
         //更改了映射方式
                               //.then Promise异步请求
         this.addCart(product).then( res => {
-          console.log(res);
+          //普通写法
+          //一旦点击即可触发 将show = true
+          // this.show = true;
+          // //一旦点击即可触发 将message = res内部设置的数据
+          // this.message = res
+          
+          // //计时器 触发后计时一会消失
+          // setTimeout(() => {
+          //   this.show = false;
+          //   this.message = ""
+          // },1000)
+
+          //插件方式写法
+          this.$toast.show(res)
         })
                                                 //.then Promise异步请求
         // this.$store.dispatch("addCart", product).then( res => {

@@ -13,34 +13,34 @@ Vue.use(VueRouter)
 
 //2.创建路由对象
 const routes = [
-   {
-       path: "/",
-       redirect: "/home"
-   },
-   {
-       path: "/home",
-       component: Home
-   },
-   {
-       path: "/cart",
-       component: Cart
-   },
-   {
-       path: "/category",
-       component: Category
-   },
-   {
-       path: "/profile",
-       component: Profile
-   },
-   {
+  {
+    path: "/",
+    redirect: "/home"
+  },
+  {
+    path: "/home",
+    component: Home
+  },
+  {
+    path: "/cart",
+    component: Cart
+  },
+  {
+    path: "/category",
+    component: Category
+  },
+  {
+    path: "/profile",
+    component: Profile
+  },
+  {
     path: "/detail/:iid",
     component: Detail
-}
+  }
 ]
 const router = new VueRouter({
-    routes,
-    mode: "history"
+  routes,
+  mode: "history"
 })
 
 export default router

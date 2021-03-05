@@ -1,7 +1,7 @@
 <template>
    <div class="goods-list-item" @click="itemClick">  
      <!-- load实时监听 在一加载时就监听 -->
-     <img :src="showImage" alt="" @load="imageLoad">
+     <img v-lazy="showImage" alt="" @load="imageLoad">
      <div class="goods-info">
        <p>{{item1.title}}</p>
        <span class="price">{{item1.price}}</span>

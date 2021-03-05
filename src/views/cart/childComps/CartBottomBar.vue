@@ -10,7 +10,7 @@
       合计: {{totalPrice}}
     </div>
     
-    <div class="calcuate"> 
+    <div class="calcuate" @click="calcClick"> 
       去结算: ({{checkLength}})
     </div>
 
@@ -99,6 +99,12 @@
             item.checked = true
           )
         }
+      },
+      //去结算 
+      calcClick() {
+        if(!this.isSelectAll) {
+          this.$toast.show("选择要购买的商品", 1000)  
+        } 
       }
     },
   }
